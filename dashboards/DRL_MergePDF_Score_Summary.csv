@@ -1,0 +1,32 @@
+Metric,Count,Percentage
+✅ PASS,7,21%
+⚠️ PARTIAL,6,18%
+❌ FAIL,16,48%
+⏭️ N/A,4,12%
+Total Checklist Items,33,100%
+---,---,---
+Verdict Category,Status,Details
+Maturity Level 1,⚠️ INCOMPLETE,"VB→C# ✅ | .NET 8 ✅ | Console App ✅ | Linux Container ⚠️ | Service Bus ✅"
+Maturity Level 2,❌ NOT READY,"KEDA ❌ | Helm ❌ | Auto-Heal ❌ | Health Check ❌ | Domain Flag ❌ | Generic Agent ❌"
+Final Qualification,❌ NOT QUALIFIED,"7 of 33 items PASS. Critical blockers: .NET 10 / KEDA / Auto-Heal / Domain Flag / Load Testing"
+---,---,---
+P0 Blockers (Sprint 1),Item,Action
+,.NET 10 Migration,"Upgrade all csproj to net10.0 + Dockerfile base images"
+,KEDA Autoscaling,"Add ScaledObject + Helm charts targeting Azure SB queue"
+,Datadog.Trace APM,"Add Datadog.Trace NuGet + DD_* env vars"
+,Helm Charts,"Create Helm charts directory with deployment templates"
+---,---,---
+P1 Important (Sprint 2),Item,Action
+,Domain Level Flag,"Implement AzureQueueConfigMaster.AllDomainsEnable + fallback"
+,Auto-Heal + Health Check,"Integrate AutoHeal DLL + SpJobTypeAgentInfo query"
+,Exponential Backoff,"Replace fixed intervals with SPset interval DLL"
+,IaC (Terraform),"Create Terraform/Bicep for Service Bus queue provisioning"
+,Generic Agent,"Integrate Generic Agent for DB→ServiceBus publishing"
+---,---,---
+P2 Observations (Sprint 3),Item,Action
+,Load Testing,"Complete Stage + QAT load tests"
+,Snyk Scan,"Add Snyk GitHub Action to CI pipeline"
+,SonarQube,"Uncomment SonarQube scanner in Dockerfile"
+,Secrets Externalization,"Move passwords/tokens from appsettings.json to Key Vault"
+,CI/CD Multi-env,"Add Dev→QAT→Stage→Prod deployment stages"
+,DBCommonLib,"Evaluate migration from Dapper to DBCommonLib"

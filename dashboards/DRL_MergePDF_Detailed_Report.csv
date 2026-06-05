@@ -1,0 +1,86 @@
+Section,Item,Value
+Agent Metadata,Agent Name,Scalable Agent - DRL Merge PDF
+Agent Metadata,Repository,tr/SP_SurePrep.DRL.Agent (monorepo)
+Agent Metadata,Subfolder,SurePrep.DRL.Agent.MergePDF
+Agent Metadata,Sr.No (2025 Sheet),38
+Agent Metadata,Team,iSquad
+Agent Metadata,POC/EM,Sachin Saklecha
+Agent Metadata,Committed Year,2025
+Agent Metadata,TRAssetinsightid,208443
+Agent Metadata,Dev Completion Date,2026-04-07
+Agent Metadata,CI/CD Pipeline,Done
+Agent Metadata,Prod Signoff Target,2026-06-04
+Agent Metadata,QA Name,Priyanka Patil
+---,---,---
+Framework Details,Target Framework,net8.0
+Framework Details,Output Type,Exe (Console Application)
+Framework Details,Docker Target OS,Linux
+Framework Details,.NET 10 Status,NOT MIGRATED
+Framework Details,.NET 4.8.1 Status,NOT PRESENT (Clean)
+---,---,---
+NuGet Packages (MergePDF.csproj),Microsoft.VisualStudio.Azure.Containers.Tools.Targets,1.22.1
+NuGet Packages (Business.csproj),Azure.Messaging.ServiceBus,7.20.1
+NuGet Packages (DataAccess.csproj),Dapper,2.1.66
+NuGet Packages (DataAccess.csproj),Microsoft.Data.SqlClient,6.1.2
+NuGet Packages (DataAccess.csproj),Microsoft.Extensions.Configuration.Abstractions,9.0.10
+NuGet Packages (Logger.csproj),Serilog,4.2.0
+NuGet Packages (Logger.csproj),Serilog.Sinks.Console,6.0.0
+NuGet Packages (Logger.csproj),Serilog.Sinks.Datadog.Logs,0.6.0
+NuGet Packages (Logger.csproj),Serilog.Sinks.File,6.0.0
+NuGet Packages (Logger.csproj),Serilog.Settings.Configuration,9.0.0
+NuGet Packages (Tests.csproj),xunit,2.5.3
+NuGet Packages (Tests.csproj),Moq,4.20.72
+NuGet Packages (Tests.csproj),coverlet.collector,6.0.0
+NuGet Packages (Tests.csproj),Microsoft.NET.Test.Sdk,17.8.0
+NuGet Packages - MISSING,Datadog.Trace,NOT FOUND
+NuGet Packages - MISSING,DBCommonLib,NOT FOUND (uses Dapper directly)
+NuGet Packages - MISSING,SP_QueueManager,NOT FOUND
+NuGet Packages - MISSING,AutoHeal DLL,NOT FOUND
+NuGet Packages - MISSING,SPset Interval DLL,NOT FOUND
+---,---,---
+Docker Analysis,Build Image,mcr.microsoft.com/dotnet/sdk:8.0
+Docker Analysis,Runtime Image,mcr.microsoft.com/dotnet/aspnet:8.0
+Docker Analysis,Target Image (Required),mcr.microsoft.com/dotnet/runtime:10.0-jammy-chiseled
+Docker Analysis,Chromium Dependencies,Yes (heavy - html2pdf_chromium.so)
+Docker Analysis,SonarQube,COMMENTED OUT
+Docker Analysis,GC Configuration,Server GC + Concurrent GC + LOH Compaction
+Docker Analysis,Timezone,PST (America/Los_Angeles)
+---,---,---
+Graceful Shutdown,CancellationToken,✅ Implemented
+Graceful Shutdown,SIGTERM Handling,✅ PosixSignalRegistration
+Graceful Shutdown,SIGINT Handling,✅ PosixSignalRegistration
+Graceful Shutdown,ProcessExit Fallback,✅ AppDomain.CurrentDomain.ProcessExit
+Graceful Shutdown,Active Job Tracking,✅ ConcurrentDictionary<int Task>
+Graceful Shutdown,Shutdown Timeout,10 minutes
+Graceful Shutdown,ServiceBus Stop on Cancel,✅ StopProcessorAsync()
+---,---,---
+Service Bus,Package,Azure.Messaging.ServiceBus v7.20.1
+Service Bus,Pattern,Event-driven (ServiceBusProcessor)
+Service Bus,Max Concurrent Calls,Configurable (MaxConcurrentThreadAllowed=15)
+Service Bus,Message Handling,CompleteMessageAsync / AbandonMessageAsync
+Service Bus,IaC Provisioning,❌ NOT FOUND
+---,---,---
+Security Concerns,Hardcoded DB Password,appsettings.json contains plaintext password
+Security Concerns,Hardcoded API Tokens,appsettings.json contains auth tokens
+Security Concerns,PDFTron Key,appsettings.json contains license key
+Security Concerns,Recommendation,Externalize to Azure Key Vault / K8s Secrets
+---,---,---
+Load Test Results,Stage Load Test Status,NOT COMPLETED (nan)
+Load Test Results,QAT Load Test Status,NOT COMPLETED (nan)
+Load Test Results,Deployment Plan Load Test,NOT LISTED
+---,---,---
+CI/CD Pipeline,Workflow File,.github/workflows/SurePrep.DRL.Agent.MergePDF.yml
+CI/CD Pipeline,Trigger,push to main/release/** + PR + manual
+CI/CD Pipeline,Build Platform,linux/amd64
+CI/CD Pipeline,Test Integration,✅ dotnet test with XPlat Code Coverage
+CI/CD Pipeline,Artifacts,Docker image tar published
+CI/CD Pipeline,Helm Charts,❌ NOT FOUND
+CI/CD Pipeline,Multi-env Deploy,❌ NOT FOUND (build-only)
+CI/CD Pipeline,Snyk Scan Step,❌ NOT FOUND
+---,---,---
+Unit Testing,Test Project,SurePrep.DRL.Agent.Tests
+Unit Testing,Framework,xUnit 2.5.3
+Unit Testing,Mocking,Moq 4.20.72
+Unit Testing,Coverage Tool,coverlet.collector 6.0.0
+Unit Testing,Coverage Format,opencover
+Unit Testing,CI Integration,✅ Tests run in Dockerfile + workflow
