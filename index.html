@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🚀 Agent Modernization Checklist Dashboard — 2025 & 2026</title>
+<style>
+:root {
+  --bg-dark: #0f1923;
+  --bg-card: #1a2836;
+  --bg-card-hover: #213244;
+  --accent-blue: #4fc3f7;
+  --accent-green: #66bb6a;
+  --accent-red: #ef5350;
+  --accent-yellow: #ffa726;
+  --accent-purple: #ab47bc;
+  --text-primary: #e0e6ed;
+  --text-secondary: #8899aa;
+  --border-color: #2a3f52;
+  --pass: #1b5e20;
+  --partial: #e65100;
+  --fail: #b71c1c;
+  --na: #37474f;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background: var(--bg-dark); color: var(--text-primary); min-height:100vh; }
+.header { background: linear-gradient(135deg, #1a237e 0%, #0d47a1 50%, #01579b 100%); padding: 28px 40px; box-shadow: 0 4px 20px rgba(0,0,0,0.4); }
+.header h1 { font-size: 26px; font-weight: 700; letter-spacing: 0.5px; }
+.header p { color: #90caf9; margin-top: 6px; font-size: 14px; }
+.header .meta { display: flex; gap: 24px; margin-top: 12px; flex-wrap: wrap; }
+.header .meta span { background: rgba(255,255,255,0.1); padding: 4px 14px; border-radius: 20px; font-size: 12px; color: #bbdefb; }
+.tabs { display: flex; background: #162636; border-bottom: 2px solid var(--border-color); padding: 0 40px; }
+.tab { padding: 14px 28px; cursor: pointer; font-size: 14px; font-weight: 600; color: var(--text-secondary); border-bottom: 3px solid transparent; transition: all 0.2s; }
+.tab:hover { color: var(--text-primary); background: rgba(255,255,255,0.03); }
+.tab.active { color: var(--accent-blue); border-bottom-color: var(--accent-blue); }
+.controls { display: flex; gap: 16px; padding: 20px 40px; flex-wrap: wrap; align-items: center; }
+.search-box { flex: 1; min-width: 260px; padding: 10px 16px; background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 8px; color: var(--text-primary); font-size: 14px; outline: none; }
+.search-box:focus { border-color: var(--accent-blue); box-shadow: 0 0 0 3px rgba(79,195,247,0.15); }
+.filter-btn { padding: 8px 18px; border: 1px solid var(--border-color); background: var(--bg-card); color: var(--text-secondary); border-radius: 8px; cursor: pointer; font-size: 13px; transition: all 0.2s; }
+.filter-btn:hover, .filter-btn.active { background: var(--accent-blue); color: #000; border-color: var(--accent-blue); }
+.summary-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px; padding: 0 40px 20px; }
+.summary-card { background: var(--bg-card); border-radius: 12px; padding: 20px; border: 1px solid var(--border-color); text-align: center; transition: transform 0.2s; }
+.summary-card:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,0.3); }
+.summary-card .num { font-size: 36px; font-weight: 800; }
+.summary-card .label { font-size: 12px; color: var(--text-secondary); margin-top: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
+.num.green { color: var(--accent-green); }
+.num.yellow { color: var(--accent-yellow); }
+.num.red { color: var(--accent-red); }
+.num.blue { color: var(--accent-blue); }
+.num.purple { color: var(--accent-purple); }
+.content { padding: 0 40px 40px; }
+.table-wrapper { overflow-x: auto; border-radius: 12px; border: 1px solid var(--border-color); }
+table { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+thead { position: sticky; top: 0; z-index: 10; }
+th { background: #1e3448; padding: 12px 10px; text-align: left; font-weight: 600; color: var(--accent-blue); white-space: nowrap; border-bottom: 2px solid var(--border-color); font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; }
+td { padding: 10px 10px; border-bottom: 1px solid rgba(42,63,82,0.5); vertical-align: middle; }
+tr { transition: background 0.15s; }
+tr:hover { background: rgba(79,195,247,0.04); }
+.agent-name { font-weight: 600; color: var(--text-primary); max-width: 260px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.status-cell { text-align: center; }
+.badge { display: inline-block; padding: 3px 10px; border-radius: 12px; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.3px; }
+.badge.pass { background: rgba(102,187,106,0.15); color: #66bb6a; border: 1px solid rgba(102,187,106,0.3); }
+.badge.partial { background: rgba(255,167,38,0.15); color: #ffa726; border: 1px solid rgba(255,167,38,0.3); }
+.badge.fail { background: rgba(239,83,80,0.15); color: #ef5350; border: 1px solid rgba(239,83,80,0.3); }
+.badge.na { background: rgba(120,144,156,0.15); color: #90a4ae; border: 1px solid rgba(120,144,156,0.3); }
+.badge.info { background: rgba(79,195,247,0.15); color: #4fc3f7; border: 1px solid rgba(79,195,247,0.3); }
+.progress-bar-bg { width: 100%; height: 6px; background: rgba(255,255,255,0.06); border-radius: 3px; overflow: hidden; margin-top: 4px; }
+.progress-bar-fill { height: 100%; border-radius: 3px; transition: width 0.5s ease; }
+.detail-panel { display: none; background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 12px; padding: 24px; margin-top: 20px; }
+.detail-panel.show { display: block; }
+.detail-panel h3 { color: var(--accent-blue); margin-bottom: 16px; }
+.detail-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 12px; }
+.detail-item { background: rgba(255,255,255,0.03); border: 1px solid var(--border-color); border-radius: 8px; padding: 12px 16px; display: flex; justify-content: space-between; align-items: center; }
+.detail-item .label { color: var(--text-secondary); font-size: 12px; }
+.repo-link { color: var(--accent-blue); text-decoration: none; font-size: 12px; }
+.repo-link:hover { text-decoration: underline; }
+.chart-container { display: flex; gap: 20px; padding: 0 40px 20px; flex-wrap: wrap; }
+.chart-card { flex: 1; min-width: 320px; background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 12px; padding: 24px; }
+.chart-card h3 { font-size: 14px; color: var(--accent-blue); margin-bottom: 16px; }
+.bar-chart-row { display: flex; align-items: center; margin-bottom: 10px; gap: 10px; }
+.bar-label { width: 140px; font-size: 11px; color: var(--text-secondary); text-align: right; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.bar-track { flex: 1; height: 20px; background: rgba(255,255,255,0.04); border-radius: 4px; overflow: hidden; position: relative; }
+.bar-fill { height: 100%; border-radius: 4px; display: flex; align-items: center; justify-content: flex-end; padding-right: 6px; font-size: 10px; font-weight: 700; color: #fff; transition: width 0.6s ease; }
+.deficit-section { padding: 0 40px 40px; }
+.deficit-card { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 12px; padding: 24px; margin-bottom: 16px; }
+.deficit-card h3 { color: var(--accent-red); margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+.deficit-item { padding: 8px 0; border-bottom: 1px solid rgba(42,63,82,0.3); display: flex; gap: 12px; align-items: flex-start; }
+.deficit-item:last-child { border-bottom: none; }
+.deficit-icon { font-size: 16px; min-width: 24px; }
+.deficit-text { font-size: 13px; color: var(--text-secondary); }
+.deficit-text strong { color: var(--text-primary); }
+.timestamp { font-size: 11px; color: var(--text-secondary); padding: 10px 40px; text-align: right; }
+@media (max-width: 768px) {
+  .header, .controls, .summary-grid, .content, .chart-container, .deficit-section { padding-left: 16px; padding-right: 16px; }
+  .tabs { padding: 0 16px; }
+  .tab { padding: 12px 16px; font-size: 13px; }
+}
+.tooltip { position: relative; cursor: help; }
+.tooltip:hover::after { content: attr(data-tip); position: absolute; bottom: 100%; left: 50%; transform: translateX(-50%); background: #263845; color: #fff; padding: 6px 12px; border-radius: 6px; font-size: 11px; white-space: nowrap; z-index: 100; box-shadow: 0 4px 12px rgba(0,0,0,0.4); }
+.legend { display: flex; gap: 16px; padding: 8px 40px 16px; flex-wrap: wrap; }
+.legend-item { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--text-secondary); }
+.legend-dot { width: 10px; height: 10px; border-radius: 50%; }
+.qualified-badge { padding: 4px 12px; border-radius: 6px; font-weight: 700; font-size: 11px; }
+.qualified-badge.yes { background: linear-gradient(135deg, #1b5e20, #2e7d32); color: #a5d6a7; }
+.qualified-badge.no { background: linear-gradient(135deg, #b71c1c, #c62828); color: #ef9a9a; }
+.qualified-badge.pending { background: linear-gradient(135deg, #e65100, #ef6c00); color: #ffcc80; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>🚀 Scalable Agent Modernization — Checklist Dashboard</h1>
+  <p>Comprehensive compliance tracker based on "Updated Checklist for 2025 and 2026" — Cross-referenced with live repository scans</p>
+  <div class="meta">
+    <span>📅 Generated: June 05, 2026</span>
+    <span>📊 2025 Agents: 38</span>
+    <span>📊 2026 Agents: 21</span>
+    <span>🗂️ Unique Repos Scanned: 16</span>
+    <span>✅ Checklist Items: 34</span>
+  </div>
+</div>
+
+<div class="tabs" id="mainTabs">
+  <div class="tab active" onclick="switchTab('overview')">📊 Overview</div>
+  <div class="tab" onclick="switchTab('agents2025')">🟢 2025 Agents (38)</div>
+  <div class="tab" onclick="switchTab('agents2026')">🔵 2026 Agents (21)</div>
+  <div class="tab" onclick="switchTab('reposcan')">🔍 Repo Scan Results</div>
+  <div class="tab" onclick="switchTab('deficits')">⚠️ Deficit Report</div>
+</div>
+
+<!-- ==================== OVERVIEW TAB ==================== -->
+<div id="tab-overview" class="tab-content">
+  <div class="summary-grid" style="padding-top:20px;">
+    <div class="summary-card"><div class="num green" id="totalPass">4</div><div class="label">✅ Fully Passing</div></div>
+    <div class="summary-card"><div class="num yellow" id="totalPartial">12</div><div class="label">⚠️ Partial</div></div>
+    <div class="summary-card"><div class="num red" id="totalFail">8</div><div class="label">❌ Not Found</div></div>
+    <div class="summary-card"><div class="num blue">59</div><div class="label">📋 Total Agents</div></div>
+    <div class="summary-card"><div class="num purple">16</div><div class="label">🗂️ Repos Scanned</div></div>
+    <div class="summary-card"><div class="num green">2</div><div class="label">🎯 .NET 10 Migrated</div></div>
+  </div>
+
+  <div class="chart-container">
+    <div class="chart-card">
+      <h3>📊 Checklist Coverage by Category (% Repos)</h3>
+      <div id="coverageChart"></div>
+    </div>
+    <div class="chart-card">
+      <h3>🏆 Top Compliant Repos</h3>
+      <div id="repoRankChart"></div>
+    </div>
+  </div>
+
+  <div class="chart-container">
+    <div class="chart-card" style="flex:2;">
+      <h3>📈 Milestones — Prod Deployment Timeline (2026)</h3>
+      <div id="timelineChart"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== 2025 AGENTS TAB ==================== -->
+<div id="tab-agents2025" class="tab-content" style="display:none;">
+  <div class="controls">
+    <input type="text" class="search-box" id="search2025" placeholder="🔍 Search agents by name..." oninput="filterTable('table2025', this.value)">
+    <button class="filter-btn active" onclick="filterStatus('table2025','all',this)">All</button>
+    <button class="filter-btn" onclick="filterStatus('table2025','pass',this)">✅ Pass</button>
+    <button class="filter-btn" onclick="filterStatus('table2025','partial',this)">⚠️ Partial</button>
+    <button class="filter-btn" onclick="filterStatus('table2025','fail',this)">❌ Fail</button>
+  </div>
+  <div class="legend">
+    <div class="legend-item"><div class="legend-dot" style="background:#66bb6a;"></div> Pass / Confirmed</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#ffa726;"></div> Partial / In Progress</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#ef5350;"></div> Fail / Not Found</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#90a4ae;"></div> N/A / Not Applicable</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#4fc3f7;"></div> Info / Documented</div>
+  </div>
+  <div class="content">
+    <div class="table-wrapper">
+      <table id="table2025">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Agent Name</th>
+            <th>.NET 8</th>
+            <th>.NET 10</th>
+            <th>VB→C#</th>
+            <th>Console App</th>
+            <th>Containerization</th>
+            <th>Datadog</th>
+            <th>Serilog v6</th>
+            <th>Queue Mgr</th>
+            <th>SecondaryDB</th>
+            <th>Domain Flag</th>
+            <th>Exp Backoff</th>
+            <th>AutoHeal</th>
+            <th>SB Queue</th>
+            <th>Generic Agent</th>
+            <th>CI/CD</th>
+            <th>KEDA</th>
+            <th>Unit Tests</th>
+            <th>Load Test</th>
+            <th>Snyk</th>
+            <th>SonarQube</th>
+            <th>DBCommonLib</th>
+            <th>Graceful Shutdown</th>
+            <th>Qualified</th>
+          </tr>
+        </thead>
+        <tbody id="tbody2025"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== 2026 AGENTS TAB ==================== -->
+<div id="tab-agents2026" class="tab-content" style="display:none;">
+  <div class="controls">
+    <input type="text" class="search-box" id="search2026" placeholder="🔍 Search 2026 agents..." oninput="filterTable('table2026', this.value)">
+    <button class="filter-btn active" onclick="filterStatus('table2026','all',this)">All</button>
+    <button class="filter-btn" onclick="filterStatus('table2026','pass',this)">✅ Pass</button>
+    <button class="filter-btn" onclick="filterStatus('table2026','fail',this)">❌ Fail</button>
+  </div>
+  <div class="content">
+    <div class="table-wrapper">
+      <table id="table2026">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Agent Name</th>
+            <th>.NET 10</th>
+            <th>VB→C#</th>
+            <th>Console App</th>
+            <th>Containerization</th>
+            <th>Datadog</th>
+            <th>Queue Mgr</th>
+            <th>SB Queue</th>
+            <th>CI/CD</th>
+            <th>KEDA</th>
+            <th>Milestone Status</th>
+            <th>Qualified</th>
+          </tr>
+        </thead>
+        <tbody id="tbody2026"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== REPO SCAN TAB ==================== -->
+<div id="tab-reposcan" class="tab-content" style="display:none;">
+  <div class="controls">
+    <input type="text" class="search-box" id="searchRepo" placeholder="🔍 Search repos..." oninput="filterTable('tableRepo', this.value)">
+  </div>
+  <div class="content">
+    <div class="table-wrapper">
+      <table id="tableRepo">
+        <thead>
+          <tr>
+            <th>Repository</th>
+            <th>Framework</th>
+            <th>Output Type</th>
+            <th>Dockerfile</th>
+            <th>Datadog.Trace</th>
+            <th>Serilog.Console</th>
+            <th>QueueManager</th>
+            <th>ServiceBus</th>
+            <th>DBCommonLib</th>
+            <th>HealthCheck</th>
+            <th>SPSetTimeInterval</th>
+            <th>Unit Tests</th>
+            <th>CI/CD</th>
+            <th>Graceful Shutdown</th>
+            <th>Score</th>
+          </tr>
+        </thead>
+        <tbody id="tbodyRepo"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== DEFICIT TAB ==================== -->
+<div id="tab-deficits" class="tab-content" style="display:none;">
+  <div class="deficit-section" style="padding-top:20px;">
+    <div class="deficit-card">
+      <h3>🔴 P0 — Critical Blockers for Production</h3>
+      <div class="deficit-item"><div class="deficit-icon">🎯</div><div class="deficit-text"><strong>.NET 10 Migration:</strong> Only 2/16 repos migrated (TaxCaddy & CCH TokenRefresh). 14 repos remain on net8.0. Target: net10.0 for all by 2026.</div></div>
+      <div class="deficit-item"><div class="deficit-icon">📡</div><div class="deficit-text"><strong>Datadog.Trace NuGet:</strong> Only 2/16 repos have the package. Most rely on external config rather than in-code tracing.</div></div>
+      <div class="deficit-item"><div class="deficit-icon">🗄️</div><div class="deficit-text"><strong>Secondary DB FQDN:</strong> NeedToAppendInDBServerSecondary not found in any repo code. May be externally managed.</div></div>
+      <div class="deficit-item"><div class="deficit-icon">📦</div><div class="deficit-text"><strong>Queue Manager (.NET 10):</strong> Only TaxCaddy has the latest QueueManager NuGet (v2026.5.27). 15/16 repos missing.</div></div>
+      <div class="deficit-item"><div class="deficit-icon">🏥</div><div class="deficit-text"><strong>Auto-Heal & Health Check:</strong> Only TaxCaddy has SurePrep.AgentHealthCheckLibrary. 15/16 repos missing.</div></div>
+      <div class="deficit-item"><div class="deficit-icon">⏱️</div><div class="deficit-text"><strong>Exponential Backoff:</strong> Only TaxCaddy has SurePrep.SPSetTimeInterval. 15/16 repos missing.</div></div>
+      <div class="deficit-item"><div class="deficit-icon">📊</div><div class="deficit-text"><strong>KEDA Autoscaling:</strong> Zero KEDA ScaledObject manifests found in any repository.</div></div>
+      <div class="deficit-item"><div class="deficit-icon">🏗️</div><div class="deficit-text"><strong>Service Bus IaC:</strong> No Terraform/Bicep/ARM templates found for Service Bus queue provisioning.</div></div>
+    </div>
+    <div class="deficit-card">
+      <h3>🟡 P1 — Important Gaps</h3>
+      <div class="deficit-item"><div class="deficit-icon">🐳</div><div class="deficit-text"><strong>Containerization:</strong> 8/16 repos missing Dockerfiles. May be managed externally via Plexus pipeline.</div></div>
+      <div class="deficit-item"><div class="deficit-icon">🧪</div><div class="deficit-text"><strong>Unit Tests:</strong> 7/16 repos have no .Tests projects. Testing coverage is inconsistent.</div></div>
+      <div class="deficit-item"><div class="deficit-icon">🔒</div><div class="deficit-text"><strong>Snyk Scan:</strong> Zero repos have Snyk scanning integration in GitHub Actions.</div></div>
+      <div class="deficit-item"><div class="deficit-icon">📋</div><div class="deficit-text"><strong>SonarQube:</strong> Only DRL Agent has SonarQube scanner integrated in Dockerfile build stage.</div></div>
+      <div class="deficit-item"><div class="deficit-icon">🛑</div><div class="deficit-text"><strong>Graceful Shutdown:</strong> Only GFR and UltraTaxPrePorting repos have documented SIGTERM/CancellationToken handling.</div></div>
+    </div>
+    <div class="deficit-card">
+      <h3>🟢 Recommended Actions</h3>
+      <div class="deficit-item"><div class="deficit-icon">1️⃣</div><div class="deficit-text">Populate the Updated Checklist spreadsheet using this audit data.</div></div>
+      <div class="deficit-item"><div class="deficit-icon">2️⃣</div><div class="deficit-text">Prioritize .NET 10 migration for 14 remaining repos (replicate TaxCaddy pattern).</div></div>
+      <div class="deficit-item"><div class="deficit-icon">3️⃣</div><div class="deficit-text">Standardize Datadog.Trace v3.25.0 package across all agent csproj files.</div></div>
+      <div class="deficit-item"><div class="deficit-icon">4️⃣</div><div class="deficit-text">Add KEDA ScaledObject configs to Helm charts for autoscaling (reference Autoscaling Plan sheet data).</div></div>
+      <div class="deficit-item"><div class="deficit-icon">5️⃣</div><div class="deficit-text">Integrate Snyk scanning into all GitHub Action workflows.</div></div>
+      <div class="deficit-item"><div class="deficit-icon">6️⃣</div><div class="deficit-text">Add HealthCheck library and SPSetTimeInterval NuGet to all agent csproj files.</div></div>
+      <div class="deficit-item"><div class="deficit-icon">7️⃣</div><div class="deficit-text">Create IaC for Service Bus queue provisioning (Terraform/Bicep).</div></div>
+    </div>
+  </div>
+</div>
+
+<div class="timestamp">Last scan: June 05, 2026 • Data sources: GitHub repo scan + Scalable Agents 2025.xlsx + Updated Checklist 2025/2026.xlsx + Master.xlsx</div>
+
+<script>
+// ===================== DATA =====================
+const agents2025 = [
+  {id:1, name:"DRL Agent (CCH Axcess)", repo:"SP_SurePrep.DRL.Agent", net8:"pass",net10:"fail",vb:"pass",console:"pass",container:"pass",datadog:"partial",serilog:"partial",queuemgr:"fail",secondarydb:"info",domainflag:"info",expbackoff:"info",autoheal:"fail",sbqueue:"info",genericagent:"fail",cicd:"pass",keda:"fail",unittests:"pass",loadtest:"pass",snyk:"fail",sonar:"pass",dbcommon:"fail",graceful:"fail",qualified:"pending",team:"iSquad",milestone:"Prod 2026-05-31"},
+  {id:2, name:"DRL Agent (UltraTax Virtual)", repo:"SP_SurePrep.DRL.Agent", net8:"pass",net10:"fail",vb:"pass",console:"pass",container:"pass",datadog:"partial",serilog:"partial",queuemgr:"fail",secondarydb:"info",domainflag:"info",expbackoff:"info",autoheal:"fail",sbqueue:"info",genericagent:"fail",cicd:"pass",keda:"fail",unittests:"pass",loadtest:"pass",snyk:"fail",sonar:"pass",dbcommon:"fail",graceful:"fail",qualified:"pending",team:"iSquad",milestone:"Prod 2026-05-31"},
+  {id:3, name:"DRL Agent (UltraTax CS)", repo:"SP_SurePrep.DRL.Agent", net8:"pass",net10:"fail",vb:"pass",console:"pass",container:"pass",datadog:"partial",serilog:"partial",queuemgr:"fail",secondarydb:"info",domainflag:"info",expbackoff:"info",autoheal:"fail",sbqueue:"info",genericagent:"fail",cicd:"pass",keda:"fail",unittests:"pass",loadtest:"pass",snyk:"fail",sonar:"pass",dbcommon:"fail",graceful:"fail",qualified:"pending",team:"iSquad",milestone:"Prod 2026-05-31"},
+  {id:4, name:"DRL Agent (GoSystem)", repo:"SP_SurePrep.DRL.Agent", net8:"pass",net10:"fail",vb:"pass",console:"pass",container:"pass",datadog:"partial",serilog:"partial",queuemgr:"fail",secondarydb:"info",domainflag:"info",expbackoff:"info",autoheal:"fail",sbqueue:"info",genericagent:"fail",cicd:"pass",keda:"fail",unittests:"pass",loadtest:"pass",snyk:"fail",sonar:"pass",dbcommon:"fail",graceful:"fail",qualified:"pending",team:"iSquad",milestone:"Prod 2026-05-31"},
+  {id:5, name:"DRL Agent (CCH Bulk)", repo:"SP_SurePrep.DRL.Agent", net8:"pass",net10:"fail",vb:"pass",console:"pass",container:"pass",datadog:"partial",serilog:"partial",queuemgr:"fail",secondarydb:"info",domainflag:"info",expbackoff:"info",autoheal:"fail",sbqueue:"info",genericagent:"fail",cicd:"pass",keda:"fail",unittests:"pass",loadtest:"pass",snyk:"fail",sonar:"pass",dbcommon:"fail",graceful:"fail",qualified:"pending",team:"iSquad",milestone:"Prod 2026-05-31"},
+  {id:6, name:"DRL Agent (Lacerte)", repo:"SP_SurePrep.DRL.Agent", net8:"pass",net10:"fail",vb:"pass",console:"pass",container:"pass",datadog:"partial",serilog:"partial",queuemgr:"fail",secondarydb:"info",domainflag:"info",expbackoff:"info",autoheal:"fail",sbqueue:"info",genericagent:"fail",cicd:"pass",keda:"fail",unittests:"pass",loadtest:"pass",snyk:"fail",sonar:"pass",dbcommon:"fail",graceful:"fail",qualified:"pending",team:"iSquad",milestone:"Prod 2026-05-31"},
+  {id:7, name:"Tax Summary (GoSystem)", repo:"SP_SurePrep.TSFGo.Agent", net8:"pass",net10:"fail",vb:"pass",console:"pass",container:"fail",datadog:"partial",serilog:"fail",queuemgr:"fail",secondarydb:"info",domainflag:"info",expbackoff:"info",autoheal:"fail",sbqueue:"fail",genericagent:"fail",cicd:"pass",keda:"fail",unittests:"pass",loadtest:"pass",snyk:"fail",sonar:"fail",dbcommon:"fail",graceful:"fail",qualified:"pending",team:"iSquad",milestone:"Prod 2026-04-26"},
+  {id:8, name:"Tax Summary (CCH)", repo:"SP_SurePrep.TSFCCH.Agent", net8:"pass",net10:"fail",vb:"pass",console:"pass",container:"fail",datadog:"partial",serilog:"fail",queuemgr:"fail",secondarydb:"info",domainflag:"info",expbackoff:"info",autoheal:"fail",sbqueue:"fail",genericagent:"fail",cicd:"pass",keda:"fail",unittests:"pass",loadtest:"pass",snyk:"fail",sonar:"fail",dbcommon:"fail",graceful:"fail",qualified:"pending",team:"iSquad",milestone:"Prod 2026-04-26"},
+  {id:9, name:"SPBinder Printing (Azure Batch)", repo:"N/A", net8:"pass",net10:"fail",vb:"pass",console:"pass",container:"na",datadog:"fail",serilog:"fail",queuemgr:"fail",secondarydb:"fail",domainflag:"fail",expbackoff:"fail",autoheal:"fail",sbqueue:"fail",genericagent:"fail",cicd:"pass",keda:"na",unittests:"fail",loadtest:"pass",snyk:"fail",sonar:"fail",dbcommon:"fail",graceful:"fail",qualified:"no",team:"Sunflower",milestone:"TBD"},
+  {id:10, name:"TaxCaddy Submission", repo:"SP_TaxCaddy.BinderProcessing.Agent", net8:"na",net10:"pass",vb:"pass",console:"pass",container:"pass",datadog:"pass",serilog:"pass",queuemgr:"pass",secondarydb:"fail",domainflag:"pass",expbackoff:"pass",autoheal:"pass",sbqueue:"pass",genericagent:"fail",cicd:"pass",keda:"fail",unittests:"fail",loadtest:"partial",snyk:"fail",sonar:"fail",dbcommon:"pass",graceful:"fail",qualified:"pending",team:"iScrum",milestone:"Prod 2026-05-31"},
+  {id:11, name:"OCS Fetch (GoSystem)", repo:"SP_SurePrep.OCSFetch.Agent", net8:"pass",net10:"fail",vb:"pass",console:"pass",container:"pass",datadog:"partial",serilog:"fail",queuemgr:"fail",secondarydb:"info",domainflag:"info",expbackoff:"info",autoheal:"fail",sbqueue:"fail",genericagent:"fail",cicd:"pass",keda:"fail",unittests:"pass",loadtest:"pass",snyk:"fail",sonar:"fail",dbcommon:"fail",graceful:"fail",qualified:"pending",team:"iSquad",milestone:"Prod 2026-04-26"},
+  {id:12, name:"OCS Fetch (UltraTax)", repo:"SP_SurePrep.OCSFetch.Agent", net8:"pass",net10:"fail",vb:"pass",console:"pass",container:"pass",datadog:"partial",serilog:"fail",queuemgr:"fail",secondarydb:"info",domainflag:"info",expbackoff:"info",autoheal:"fail",sbqueue:"fail",genericagent:"fail",cicd:"pass",keda:"fail",unittests:"pass",loadtest:"pass",snyk:"fail",sonar:"fail",dbcommon:"fail",graceful:"fail",qualified:"pending",team:"iSquad",milestone:"Prod 2026-04-26"},
+  {id:13, name:"OCS Fetch (CCH)", repo:"SP_SurePrep.OCSFetch.Agent", net8:"pass",net10:"fail",vb:"pass",console:"pass",container:"pass",datadog:"partial",serilog:"fail",queuemgr:"fail",secondarydb:"info",domainflag:"info",expbackoff:"info",autoheal:"fail",sbqueue:"fail",genericagent:"fail",cicd:"pass",keda:"fail",unittests:"pass",loadtest:"pass",snyk:"fail",sonar:"fail",dbcommon:"fail",graceful:"fail",qualified:"pending",team:"iSquad",milestone:"Prod 2026-04-26"},
+  {id:14, name:"Image Conversion (Azure Batch)", repo:"N/A", net8:"pass",net10:"fail",vb:"pass",console:"pass",container:"na",datadog:"fail",serilog:"fail",queuemgr:"fail",secondarydb:"fail",domainflag:"fail",expbackoff:"fail",autoheal:"fail",sbqueue:"fail",genericagent:"fail",cicd:"pass",keda:"na",unittests:"fail",loadtest:"pass",snyk:"fail",sonar:"fail",dbcommon:"fail",graceful:"fail",qualified:"no",team:"Sunflower",milestone:"TBD"},
+  {id:15, name:"WebHook Agent", repo:"SP_SurePrep.WebHook.Agent", net8:"pass",net10:"fail",vb:"pass",console:"pass",container:"fail",datadog:"partial",serilog:"fail",queuemgr:"fail",secondarydb:"info",domainflag:"fail",expbackoff:"info",autoheal:"fail",sbqueue:"fail",genericagent:"fail",cicd:"pass",keda:"fail",unittests:"pass",loadtest:"fail",snyk:"fail",sonar:"fail",dbcommon:"fail",graceful:"fail",qualified:"pending",team:"iSquad",milestone:"Prod 2026-05-31"},
+  {id:16, name:"CCH Refresh Token", repo:"SP_Sureprep.CCH.TokenRefresh.Agent", net8:"na",net10:"pass",vb:"pass",console:"pass",container:"pass",datadog:"pass",serilog:"pass",queuemgr:"fail",secondarydb:"fail",domainflag:"pass",expbackoff:"fail",autoheal:"fail",sbqueue:"fail",genericagent:"fail",cicd:"pass",keda:"fail",unittests:"fail",loadtest:"partial",snyk:"fail",sonar:"fail",dbcommon:"fail",graceful:"fail",qualified:"pending",team:"iScrum",milestone:"Prod 2026-05-31"},
+  {id:17, name:"WebHook Agent (Text Search)", repo:"SP_SurePrep.WebHook.Agent", net8:"pass",net10:"fail",vb:"pass",console:"pass",container:"fail",datadog:"partial",serilog:"fail",queuemgr:"fail",secondarydb:"info",domainflag:"fail",expbackoff:"info",autoheal:"fail",sbqueue:"fail",genericagent:"fail",cicd:"pass",keda:"fail",unittests:"pass",loadtest:"fail",snyk:"fail",sonar:"fail",dbcommon:"fail",graceful:"fail",qualified:"pending",team:"iSquad",milestone:"Prod 2026-05-31"},
+  {id:18, name:"DocPulse (OCR ACE)", repo:"N/A (Plexus)", net8:"pass",net10:"fail",vb:"pass",console:"pass",container:"pass",datadog:"info",serilog:"fail",queuemgr:"fail",secondarydb:"info",domainflag:"info",expbackoff:"fail",autoheal:"fail",sbqueue:"fail",genericagent:"fail",cicd:"pass",keda:"fail",unittests:"fail",loadtest:"pass",snyk:"fail",sonar:"fail",dbcommon:"fail",graceful:"fail",qualified:"pending",team:"Sunflower",milestone:"Prod 2026-06-28"},
+  {id:19, name:"2050 Upload GFR", repo:"SP_SurePrep.GFR.Agent", net8:"pass",net10:"fail",vb:"pass",console:"pass",container:"fail",datadog:"partial",serilog:"pass",queuemgr:"fail",secondarydb:"info",domainflag:"info",expbackoff:"info",autoheal:"fail",sbqueue:"fail",genericagent:"fail",cicd:"pass",keda:"fail",unittests:"pass",loadtest:"pass",snyk:"fail",sonar:"fail",dbcommon:"fail",graceful:"pass",qualified:"pending",team:"iSquad",milestone:"Prod 2026-05-31"},
+  {id:20, name:"Upload & Submit GFR", repo:"SP_SurePrep.GFR.Agent", net8:"pass",net10:"fail",vb:"pass",console:"pass",container:"fail",datadog:"partial",serilog:"pass",queuemgr:"fail",secondarydb:"info",domainflag:"info",expbackoff:"info",autoheal:"fail",sbqueue:"fail",genericagent:"fail",cicd:"pass",keda:"fail",unittests:"pass",loadtest:"pass",snyk:"fail",sonar:"fail",dbcommon:"fail",graceful:"pass",qualified:"pending",team:"iSquad",milestone:"Prod 2026-05-31"},
+  {id:21, name:"Change Status GFR", repo:"SP_SurePrep.GFR.Agent", net8:"pass",net10:"fail",vb:"pass",console:"pass",container:"fail",datadog:"partial",serilog:"pass",queuemgr:"fail",secondarydb:"info",domainflag:"info",expbackoff:"info",autoheal:"fail",sbqueue:"fail",genericagent:"fail",cicd:"pass",keda:"fail",unittests:"pass",loadtest:"pass",snyk:"fail",sonar:"fail",dbcommon:"fail",graceful:"pass",qualified:"pending",team:"iSquad",milestone:"Prod 2026-05-31"},
+  {id:22, name:"CCH TaxPrint Agent", repo:"SP_ScalableRoseMapleCCH", net8:"pass",net10:"fail",vb:"pass",console:"pass",container:"pass",datadog:"info",serilog:"fail",queuemgr:"fail",secondarydb:"info",domainflag:"fail",expbackoff:"info",autoheal:"fail",sbqueue:"fail",genericagent:"fail",cicd:"pass",keda:"fail",unittests:"fail",loadtest:"pass",snyk:"fail",sonar:"fail",dbcommon:"fail",graceful:"fail",qualified:"no",team:"Rose",milestone:"Prod 2026-05-31"},
+  {id:23, name:"Fax2Tax", repo:"SP_SurePrep.FaxtotaxScalableAgent", net8:"pass",net10:"fail",vb:"pass",console:"pass",container:"pass",datadog:"info",serilog:"fail",queuemgr:"fail",secondarydb:"info",domainflag:"info",expbackoff:"info",autoheal:"fail",sbqueue:"fail",genericagent:"fail",cicd:"pass",keda:"fail",unittests:"fail",loadtest:"pass",snyk:"fail",sonar:"fail",dbcommon:"fail",graceful:"fail",qualified:"pending",team:"Lotus",milestone:"Prod 2026-05-31"},
+  {id:24, name:"UltraTax/UT Virtual Porting", repo:"SP_Scalable_UltraTaxPortingAgent", net8:"pass",net10:"fail",vb:"pass",console:"pass",container:"partial",datadog:"fail",serilog:"fail",queuemgr:"fail",secondarydb:"fail",domainflag:"fail",expbackoff:"fail",autoheal:"fail",sbqueue:"fail",genericagent:"fail",cicd:"pass",keda:"fail",unittests:"fail",loadtest:"pass",snyk:"fail",sonar:"fail",dbcommon:"fail",graceful:"fail",qualified:"pending",team:"Everest",milestone:"Prod 2026-05-31"},
+  {id:25, name:"Lacerte Tax Porting", repo:"SP_Scalable_LacertePortingAgent", net8:"pass",net10:"fail",vb:"pass",console:"pass",container:"fail",datadog:"info",serilog:"fail",queuemgr:"fail",secondarydb:"info",domainflag:"info",expbackoff:"fail",autoheal:"fail",sbqueue:"fail",genericagent:"fail",cicd:"pass",keda:"fail",unittests:"fail",loadtest:"pass",snyk:"fail",sonar:"fail",dbcommon:"fail",graceful:"fail",qualified:"pending",team:"Everest",milestone:"Prod 2026-05-31"},
+  {id:26, name:"GoSystem Porting", repo:"SP_ScalableRoseMaple", net8:"pass",net10:"fail",vb:"pass",console:"pass",container:"pass",datadog:"info",serilog:"fail",queuemgr:"fail",secondarydb:"info",domainflag:"info",expbackoff:"info",autoheal:"fail",sbqueue:"fail",genericagent:"fail",cicd:"pass",keda:"fail",unittests:"fail",loadtest:"pass",snyk:"fail",sonar:"fail",dbcommon:"fail",graceful:"fail",qualified:"pending",team:"Maple",milestone:"Prod 2026-05-31"},
+  {id:27, name:"Profx SaaS (Pre-Porting)", repo:"SP_ScalableRoseMapleCCH", net8:"pass",net10:"fail",vb:"pass",console:"pass",container:"pass",datadog:"info",serilog:"fail",queuemgr:"fail",secondarydb:"info",domainflag:"fail",expbackoff:"info",autoheal:"fail",sbqueue:"fail",genericagent:"fail",cicd:"pass",keda:"fail",unittests:"fail",loadtest:"pass",snyk:"fail",sonar:"fail",dbcommon:"fail",graceful:"fail",qualified:"no",team:"Rose",milestone:"Prod 2026-05-31"},
+  {id:28, name:"MI Report (PWC)", repo:"SP_PWCMIReportConsoleAgent", net8:"pass",net10:"fail",vb:"pass",console:"pass",container:"pass",datadog:"info",serilog:"fail",queuemgr:"fail",secondarydb:"info",domainflag:"info",expbackoff:"fail",autoheal:"fail",sbqueue:"fail",genericagent:"fail",cicd:"pass",keda:"fail",unittests:"fail",loadtest:"pass",snyk:"fail",sonar:"fail",dbcommon:"fail",graceful:"fail",qualified:"pending",team:"Sunflower",milestone:"Prod 2026-05-31"},
+  {id:29, name:"UltraTaxPrePorting", repo:"SP_SurePrep.Console.UltraTaxPrePorting", net8:"pass",net10:"fail",vb:"pass",console:"pass",container:"fail",datadog:"partial",serilog:"fail",queuemgr:"fail",secondarydb:"info",domainflag:"info",expbackoff:"info",autoheal:"fail",sbqueue:"fail",genericagent:"fail",cicd:"pass",keda:"fail",unittests:"pass",loadtest:"partial",snyk:"fail",sonar:"fail",dbcommon:"fail",graceful:"pass",qualified:"pending",team:"iSquad",milestone:"Prod 2026-05-31"},
+  {id:30, name:"AxAgent GoSystem (Pre-Porting)", repo:"SP_ScalableRoseMaple", net8:"pass",net10:"fail",vb:"pass",console:"pass",container:"pass",datadog:"info",serilog:"fail",queuemgr:"fail",secondarydb:"info",domainflag:"info",expbackoff:"info",autoheal:"fail",sbqueue:"fail",genericagent:"fail",cicd:"pass",keda:"fail",unittests:"fail",loadtest:"pass",snyk:"fail",sonar:"fail",dbcommon:"fail",graceful:"fail",qualified:"pending",team:"Maple",milestone:"Prod 2026-05-31"},
+  {id:31, name:"AxAgent GoSystem (Auto Export)", repo:"SP_ScalableRoseMaple", net8:"pass",net10:"fail",vb:"pass",console:"pass",container:"pass",datadog:"info",serilog:"fail",queuemgr:"fail",secondarydb:"info",domainflag:"info",expbackoff:"info",autoheal:"fail",sbqueue:"fail",genericagent:"fail",cicd:"pass",keda:"fail",unittests:"fail",loadtest:"pass",snyk:"fail",sonar:"fail",dbcommon:"fail",graceful:"fail",qualified:"pending",team:"Maple",milestone:"Prod 2026-05-31"},
+  {id:32, name:"AxAgent GoSystem (Import TR)", repo:"SP_ScalableRoseMaple", net8:"pass",net10:"fail",vb:"pass",console:"pass",container:"pass",datadog:"info",serilog:"fail",queuemgr:"fail",secondarydb:"info",domainflag:"info",expbackoff:"info",autoheal:"fail",sbqueue:"fail",genericagent:"fail",cicd:"pass",keda:"fail",unittests:"fail",loadtest:"pass",snyk:"fail",sonar:"fail",dbcommon:"fail",graceful:"fail",qualified:"pending",team:"Maple",milestone:"Prod 2026-05-31"},
+  {id:33, name:"Profx SaaS (Post Export)", repo:"SP_ScalableRoseMapleCCH", net8:"pass",net10:"fail",vb:"pass",console:"pass",container:"pass",datadog:"info",serilog:"fail",queuemgr:"fail",secondarydb:"info",domainflag:"fail",expbackoff:"info",autoheal:"fail",sbqueue:"fail",genericagent:"fail",cicd:"pass",keda:"fail",unittests:"fail",loadtest:"pass",snyk:"fail",sonar:"fail",dbcommon:"fail",graceful:"fail",qualified:"no",team:"Rose",milestone:"Prod 2026-05-31"},
+  {id:34, name:"Profx SaaS (Import TR)", repo:"SP_ScalableRoseMapleCCH", net8:"pass",net10:"fail",vb:"pass",console:"pass",container:"pass",datadog:"info",serilog:"fail",queuemgr:"fail",secondarydb:"info",domainflag:"fail",expbackoff:"info",autoheal:"fail",sbqueue:"fail",genericagent:"fail",cicd:"pass",keda:"fail",unittests:"fail",loadtest:"pass",snyk:"fail",sonar:"fail",dbcommon:"fail",graceful:"fail",qualified:"pending",team:"Rose",milestone:"Prod 2026-05-31"},
+  {id:35, name:"Generic Agent", repo:"SP_GenericAgent", net8:"pass",net10:"fail",vb:"pass",console:"pass",container:"pass",datadog:"fail",serilog:"fail",queuemgr:"fail",secondarydb:"fail",domainflag:"fail",expbackoff:"fail",autoheal:"fail",sbqueue:"fail",genericagent:"na",cicd:"pass",keda:"fail",unittests:"fail",loadtest:"fail",snyk:"fail",sonar:"fail",dbcommon:"fail",graceful:"fail",qualified:"pending",team:"Sunflower",milestone:"Prod 2026-06-28"},
+  {id:36, name:"Drag & Drop ACE (Image Conv)", repo:"N/A (Azure Batch)", net8:"pass",net10:"fail",vb:"pass",console:"pass",container:"na",datadog:"fail",serilog:"fail",queuemgr:"fail",secondarydb:"fail",domainflag:"fail",expbackoff:"fail",autoheal:"fail",sbqueue:"fail",genericagent:"fail",cicd:"pass",keda:"na",unittests:"fail",loadtest:"partial",snyk:"fail",sonar:"fail",dbcommon:"fail",graceful:"fail",qualified:"no",team:"Sunflower",milestone:"TBD"},
+  {id:37, name:"TransitHub Webhook", repo:"SP_SurePrep.TransitHub.BinderNotification", net8:"pass",net10:"fail",vb:"pass",console:"pass",container:"fail",datadog:"partial",serilog:"fail",queuemgr:"fail",secondarydb:"info",domainflag:"fail",expbackoff:"info",autoheal:"fail",sbqueue:"fail",genericagent:"fail",cicd:"pass",keda:"fail",unittests:"pass",loadtest:"fail",snyk:"fail",sonar:"fail",dbcommon:"fail",graceful:"fail",qualified:"pending",team:"iSquad",milestone:"Prod 2026-05-31"},
+  {id:38, name:"DRL Merge PDF", repo:"SP_SurePrep.DRL.Agent", net8:"pass",net10:"fail",vb:"pass",console:"pass",container:"pass",datadog:"partial",serilog:"partial",queuemgr:"fail",secondarydb:"info",domainflag:"info",expbackoff:"info",autoheal:"fail",sbqueue:"info",genericagent:"fail",cicd:"pass",keda:"fail",unittests:"pass",loadtest:"fail",snyk:"fail",sonar:"pass",dbcommon:"fail",graceful:"fail",qualified:"pending",team:"iSquad",milestone:"Prod 2026-05-31"},
+];
+
+const agents2026 = [
+  {id:1, name:"OCR (Main/Sub Agent)", milestone:"Prod 2026-07-26"},
+  {id:2, name:"Native Textlayer Extraction", milestone:"TBD"},
+  {id:3, name:"CCR", milestone:"Prod 2026-07-26"},
+  {id:4, name:"New Gatekeeper Agent", milestone:"Prod 2026-06-28"},
+  {id:5, name:"DWP Printing", milestone:"Prod 2026-07-26"},
+  {id:6, name:"ML Agent (Main/Sub)", milestone:"Prod 2026-06-28"},
+  {id:7, name:"New Denodo", milestone:"Prod 2026-06-28"},
+  {id:8, name:"GoSystem Reverse Porting", milestone:"Prod 2026-06-28"},
+  {id:9, name:"CCH Export/Reverse Porting", milestone:"Prod 2026-06-28"},
+  {id:10, name:"Porting for CCH Axcess Tax", milestone:"Prod 2026-06-28"},
+  {id:11, name:"XML Reading/XMLPopulation", milestone:"Prod 2026-06-28"},
+  {id:12, name:"Match and Update Go", milestone:"Prod 2026-06-28"},
+  {id:13, name:"Leadsheet Calculation", milestone:"TBD"},
+  {id:14, name:"UltraTax Reverse Porting (R2R)", milestone:"Prod 2026-06-28"},
+  {id:17, name:"DDP (Distributed Data Processing)", milestone:"Prod 2026-06-28"},
+  {id:18, name:"Match and Update CCH", milestone:"Prod 2026-06-28"},
+  {id:19, name:"CCH Missing Item", milestone:"Prod 2026-06-28"},
+  {id:20, name:"Emails Agent", milestone:"Prod 2026-06-28"},
+  {id:21, name:"Client Datafile (SPBinderDATA)", milestone:"Prod 2026-06-28"},
+  {id:26, name:"Auto Heal (Azure Function)", milestone:"N/A"},
+];
+
+const repoScanData = [
+  {repo:"SP_SurePrep.DRL.Agent",fw:"net8.0",output:"Exe",docker:"✅",datadog:"❌",serilog:"⚠️",qm:"❌",sb:"📄 Docs",dbcommon:"❌",health:"❌",interval:"❌",tests:"✅",cicd:"✅ 7 workflows",graceful:"❌",score:42},
+  {repo:"SP_TaxCaddy.BinderProcessing.Agent",fw:"net10.0",output:"Exe",docker:"✅",datadog:"✅ v3.25.0",serilog:"✅ v6.0.0",qm:"✅ v2026.5.27",sb:"✅ v7.20.1",dbcommon:"✅ v2026.5.28",health:"✅",interval:"✅",tests:"❌",cicd:"✅",graceful:"❌",score:85},
+  {repo:"SP_Sureprep.CCH.TokenRefresh.Agent",fw:"net10.0",output:"Exe",docker:"✅",datadog:"✅ v3.25.0",serilog:"✅ v6.0.0",qm:"❌",sb:"❌",dbcommon:"❌",health:"❌",interval:"❌",tests:"❌",cicd:"✅",graceful:"❌",score:50},
+  {repo:"SP_SurePrep.GFR.Agent",fw:"net8.0",output:"Exe",docker:"❌",datadog:"⚠️ DD.Logs",serilog:"✅ v6.0.0",qm:"❌",sb:"❌",dbcommon:"❌",health:"❌",interval:"❌",tests:"✅",cicd:"✅",graceful:"✅",score:40},
+  {repo:"SP_SurePrep.OCSFetch.Agent",fw:"net8.0",output:"Exe",docker:"✅",datadog:"❌",serilog:"❌",qm:"❌",sb:"❌",dbcommon:"❌",health:"❌",interval:"❌",tests:"✅",cicd:"✅",graceful:"❌",score:30},
+  {repo:"SP_SurePrep.WebHook.Agent",fw:"net8.0",output:"Exe",docker:"❌",datadog:"❌",serilog:"❌",qm:"❌",sb:"❌",dbcommon:"❌",health:"❌",interval:"❌",tests:"✅",cicd:"✅",graceful:"❌",score:22},
+  {repo:"SP_SurePrep.TSFGo.Agent",fw:"net8.0",output:"Exe",docker:"❌",datadog:"❌",serilog:"❌",qm:"❌",sb:"❌",dbcommon:"❌",health:"❌",interval:"❌",tests:"✅",cicd:"✅",graceful:"❌",score:22},
+  {repo:"SP_SurePrep.TSFCCH.Agent",fw:"net8.0",output:"Exe",docker:"❌",datadog:"❌",serilog:"❌",qm:"❌",sb:"❌",dbcommon:"❌",health:"❌",interval:"❌",tests:"✅",cicd:"✅",graceful:"❌",score:22},
+  {repo:"SP_ScalableRoseMaple",fw:"net8.0",output:"Exe",docker:"✅",datadog:"❌",serilog:"❌",qm:"❌",sb:"❌",dbcommon:"❌",health:"❌",interval:"❌",tests:"❌",cicd:"✅ 6 workflows",graceful:"❌",score:20},
+  {repo:"SP_ScalableRoseMapleCCH",fw:"net8.0",output:"Exe",docker:"✅",datadog:"❌",serilog:"❌",qm:"❌",sb:"❌",dbcommon:"❌",health:"❌",interval:"❌",tests:"❌",cicd:"✅ 9 workflows",graceful:"❌",score:20},
+  {repo:"SP_SurePrep.FaxtotaxScalableAgent",fw:"net8.0",output:"Exe",docker:"✅",datadog:"❌",serilog:"❌",qm:"❌",sb:"❌",dbcommon:"❌",health:"❌",interval:"❌",tests:"❌",cicd:"✅",graceful:"❌",score:18},
+  {repo:"SP_Scalable_UltraTaxPortingAgent",fw:"net8.0",output:"Exe",docker:"⚠️",datadog:"❌",serilog:"❌",qm:"❌",sb:"❌",dbcommon:"❌",health:"❌",interval:"❌",tests:"❌",cicd:"✅",graceful:"❌",score:15},
+  {repo:"SP_Scalable_LacertePortingAgent",fw:"net8.0",output:"Exe",docker:"❌",datadog:"❌",serilog:"❌",qm:"❌",sb:"❌",dbcommon:"❌",health:"❌",interval:"❌",tests:"❌",cicd:"✅",graceful:"❌",score:12},
+  {repo:"SP_SurePrep.Console.UltraTaxPrePorting",fw:"net8.0",output:"Exe",docker:"❌",datadog:"❌",serilog:"❌",qm:"❌",sb:"❌",dbcommon:"❌",health:"❌",interval:"❌",tests:"✅",cicd:"✅",graceful:"✅",score:25},
+  {repo:"SP_SurePrep.TransitHub.BinderNotification",fw:"net8.0",output:"Exe",docker:"❌",datadog:"❌",serilog:"❌",qm:"❌",sb:"❌",dbcommon:"❌",health:"❌",interval:"❌",tests:"✅",cicd:"✅",graceful:"❌",score:18},
+  {repo:"SP_PWCMIReportConsoleAgent",fw:"net8.0",output:"Exe",docker:"✅",datadog:"❌",serilog:"❌",qm:"❌",sb:"❌",dbcommon:"❌",health:"❌",interval:"❌",tests:"❌",cicd:"✅",graceful:"❌",score:18},
+];
+
+// ===================== RENDER FUNCTIONS =====================
+function badge(status) {
+  const map = {pass:"✅",partial:"⚠️",fail:"❌",na:"N/A",info:"📝"};
+  const cls = {pass:"pass",partial:"partial",fail:"fail",na:"na",info:"info"};
+  return `<span class="badge ${cls[status]||'na'}">${map[status]||status}</span>`;
+}
+
+function qualifiedBadge(q) {
+  if(q==="pass") return `<span class="qualified-badge yes">✅ YES</span>`;
+  if(q==="no") return `<span class="qualified-badge no">❌ NO</span>`;
+  return `<span class="qualified-badge pending">⏳ PENDING</span>`;
+}
+
+function render2025() {
+  const tb = document.getElementById("tbody2025");
+  tb.innerHTML = agents2025.map(a => {
+    const fields = ["net8","net10","vb","console","container","datadog","serilog","queuemgr","secondarydb","domainflag","expbackoff","autoheal","sbqueue","genericagent","cicd","keda","unittests","loadtest","snyk","sonar","dbcommon","graceful"];
+    const cells = fields.map(f => `<td class="status-cell">${badge(a[f])}</td>`).join('');
+    return `<tr data-status="${computeRowStatus(a)}" data-name="${a.name.toLowerCase()}">
+      <td>${a.id}</td>
+      <td class="agent-name tooltip" data-tip="${a.repo} | ${a.team}">${a.name}</td>
+      ${cells}
+      <td class="status-cell">${qualifiedBadge(a.qualified)}</td>
+    </tr>`;
+  }).join('');
+}
+
+function render2026() {
+  const tb = document.getElementById("tbody2026");
+  tb.innerHTML = agents2026.map(a => `<tr data-name="${a.name.toLowerCase()}">
+    <td>${a.id}</td>
+    <td class="agent-name">${a.name}</td>
+    <td class="status-cell">${badge("fail")}</td>
+    <td class="status-cell">${badge("fail")}</td>
+    <td class="status-cell">${badge("fail")}</td>
+    <td class="status-cell">${badge("fail")}</td>
+    <td class="status-cell">${badge("fail")}</td>
+    <td class="status-cell">${badge("fail")}</td>
+    <td class="status-cell">${badge("fail")}</td>
+    <td class="status-cell">${badge("fail")}</td>
+    <td class="status-cell">${badge("fail")}</td>
+    <td><span class="badge info">${a.milestone}</span></td>
+    <td class="status-cell">${qualifiedBadge("no")}</td>
+  </tr>`).join('');
+}
+
+function renderRepoScan() {
+  const tb = document.getElementById("tbodyRepo");
+  tb.innerHTML = repoScanData.sort((a,b)=>b.score-a.score).map(r => `<tr data-name="${r.repo.toLowerCase()}">
+    <td><a href="https://github.com/tr/${r.repo}" class="repo-link" target="_blank">${r.repo}</a></td>
+    <td><span class="badge ${r.fw==='net10.0'?'pass':'partial'}">${r.fw}</span></td>
+    <td><span class="badge pass">${r.output}</span></td>
+    <td>${r.docker}</td><td>${r.datadog}</td><td>${r.serilog}</td><td>${r.qm}</td>
+    <td>${r.sb}</td><td>${r.dbcommon}</td><td>${r.health}</td><td>${r.interval}</td>
+    <td>${r.tests}</td><td>${r.cicd}</td><td>${r.graceful}</td>
+    <td><div style="display:flex;align-items:center;gap:8px;"><span style="font-weight:700;color:${r.score>=70?'#66bb6a':r.score>=40?'#ffa726':'#ef5350'}">${r.score}%</span>
+    <div class="progress-bar-bg" style="width:80px;"><div class="progress-bar-fill" style="width:${r.score}%;background:${r.score>=70?'#66bb6a':r.score>=40?'#ffa726':'#ef5350'}"></div></div></div></td>
+  </tr>`).join('');
+}
+
+function renderCharts() {
+  const categories = [
+    {name:"VB to C#", pct:100}, {name:"Console App", pct:100}, {name:"CI/CD Pipelines", pct:100},
+    {name:".NET 8+", pct:100}, {name:"Containerization", pct:50}, {name:"Unit Tests", pct:56},
+    {name:"Serilog v6", pct:19}, {name:"Datadog Trace", pct:13}, {name:".NET 10", pct:13},
+    {name:"Graceful Shutdown", pct:13}, {name:"Service Bus", pct:13}, {name:"Queue Mgr", pct:6},
+    {name:"Auto-Heal", pct:6}, {name:"Exp Backoff", pct:6}, {name:"DBCommonLib", pct:6},
+    {name:"SonarQube", pct:6}, {name:"KEDA", pct:0}, {name:"Snyk", pct:0},
+    {name:"SB Queue IaC", pct:0}, {name:"Generic Agent", pct:0}
+  ];
+  document.getElementById("coverageChart").innerHTML = categories.map(c => `
+    <div class="bar-chart-row">
+      <div class="bar-label">${c.name}</div>
+      <div class="bar-track"><div class="bar-fill" style="width:${Math.max(c.pct,2)}%;background:${c.pct>=80?'#66bb6a':c.pct>=40?'#ffa726':c.pct>0?'#ef5350':'#546e7a'}">${c.pct}%</div></div>
+    </div>`).join('');
+
+  const repos = repoScanData.sort((a,b)=>b.score-a.score).slice(0,8);
+  document.getElementById("repoRankChart").innerHTML = repos.map(r => `
+    <div class="bar-chart-row">
+      <div class="bar-label">${r.repo.replace('SP_','').replace('SurePrep.','')}</div>
+      <div class="bar-track"><div class="bar-fill" style="width:${r.score}%;background:${r.score>=70?'#66bb6a':r.score>=40?'#ffa726':'#ef5350'}">${r.score}%</div></div>
+    </div>`).join('');
+
+  const milestones = [
+    {name:"TSF/OCSFetch (6 agents)", date:"Apr 26", pct:95, color:"#66bb6a"},
+    {name:"DRL Agents (7 agents)", date:"May 31", pct:75, color:"#ffa726"},
+    {name:"TaxCaddy/CCH Token", date:"May 31", pct:60, color:"#ffa726"},
+    {name:"GFR Agents (3 agents)", date:"May 31", pct:70, color:"#ffa726"},
+    {name:"Rose/Maple Agents", date:"May 31", pct:65, color:"#ffa726"},
+    {name:"Generic Agent", date:"Jun 28", pct:40, color:"#ef5350"},
+    {name:"2026 Agents (21)", date:"Jul 03+", pct:10, color:"#ef5350"},
+  ];
+  document.getElementById("timelineChart").innerHTML = milestones.map(m => `
+    <div class="bar-chart-row">
+      <div class="bar-label">${m.name} <span style="color:#4fc3f7;font-size:10px;">(${m.date})</span></div>
+      <div class="bar-track"><div class="bar-fill" style="width:${m.pct}%;background:${m.color}">${m.pct}%</div></div>
+    </div>`).join('');
+}
+
+function computeRowStatus(a) {
+  const fields = ["net10","container","datadog","serilog","queuemgr","expbackoff","autoheal","sbqueue","keda","unittests","snyk","sonar","dbcommon","graceful"];
+  let p=0, f=0;
+  fields.forEach(k => { if(a[k]==='pass') p++; else if(a[k]==='fail') f++; });
+  if(p >= 10) return 'pass';
+  if(f >= 10) return 'fail';
+  return 'partial';
+}
+
+// ===================== TAB SWITCHING =====================
+function switchTab(tab) {
+  document.querySelectorAll('.tab-content').forEach(el => el.style.display='none');
+  document.querySelectorAll('.tab').forEach(el => el.classList.remove('active'));
+  document.getElementById('tab-'+tab).style.display='block';
+  event.target.classList.add('active');
+}
+
+function filterTable(tableId, query) {
+  const rows = document.querySelectorAll(`#${tableId} tbody tr`);
+  rows.forEach(r => { r.style.display = r.dataset.name.includes(query.toLowerCase()) ? '' : 'none'; });
+}
+
+function filterStatus(tableId, status, btn) {
+  btn.parentElement.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  const rows = document.querySelectorAll(`#${tableId} tbody tr`);
+  rows.forEach(r => { r.style.display = (status==='all' || r.dataset.status===status) ? '' : 'none'; });
+}
+
+// ===================== INIT =====================
+render2025();
+render2026();
+renderRepoScan();
+renderCharts();
+</script>
+</body>
+</html>
